@@ -5,6 +5,7 @@ mod server;
 fn main() {
 
     let default_port = &"8080".to_string();
+    let default_ip_address = &"127.0.0.1".to_string();
     let matches = command!() // requires `cargo` feature
         .subcommand_required(true)
         .subcommand(
@@ -30,8 +31,29 @@ fn main() {
             let port = port.unwrap_or_else(|| {
                 default_port
             });
-            let mut client = client::client::Client::new(port.clone());
-            client.listen_and_poll("hi".to_string());
+            let ip_address = sub_matches.get_one::<String>("target-ip");
+            let ip_address = ip_address.unwrap_or_else(|| {
+               default_ip_address 
+            });
+            let mut client = client::client::Client::new(ip_address.to_string(), port.clone());
+
+            match sub_matches.subcommand(){
+                Some(("get", command)) =>{
+                    let argument = command.get_one::<String>("credential").unwrap();
+                    client.get_cred(argument.to_string());
+                }
+                Some(("push", command)) =>{
+                    let argument = command.get_one::<String>("credential").unwrap();
+                    client.push_cred(argument.to_string());
+                }
+                Some(("list", command)) =>{
+                    println!("List command: {:?}", command);
+                    client.list_credential();
+                }
+                _ => {
+                    println!("ERROR: command not found")
+                }
+            }
         }
         _ => {
 
@@ -75,12 +97,12 @@ fn client_command() -> clap::Command{
 
     let get_credential =
         clap::Arg::new("credential")
-        .short('c')
+        .index(1)
         .help("credential to send to the server");
 
     let push_credential =
         clap::Arg::new("credential")
-        .short('c')
+        .index(1)
         .help("credential to send to the server");
 
     let list= 

@@ -33,9 +33,19 @@ impl Server{
 
 fn handle_connection(mut conn_stream: TcpStream){
     let mut buffer = [0; 512];
-    loop{
-        let len = conn_stream.read(&mut buffer).unwrap();
-        let string_result = str::from_utf8(&buffer[0..len]).expect("msg");
-        println!("Message from server {}", string_result);
+    loop {
+        let len = match conn_stream.read(&mut buffer) {
+            Ok(len) if len == 0 => {
+                println!("Connection closed by peer");
+                break; // Break out of the loop if the stream has ended
+            }
+            Ok(len) => len,
+            Err(err) => {
+                eprintln!("Error reading from stream: {}", err);
+                break; // Break out of the loop on error
+            }
+        };
+        let string_result = str::from_utf8(&buffer[0..len]).expect("Failed to convert to UTF-8");
+        println!("Message from server: {}", string_result);
     }
 }

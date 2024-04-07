@@ -1,36 +1,56 @@
 use std::{io::Write, net::TcpStream};
-use std::thread;
-use std::time;
+use std::process;
 pub struct Client{
     connection : TcpStream
 }
 
 
 impl Client{
-    pub fn new(port: String) -> Self{
-        let connection = TcpStream::connect(format!("127.0.0.1:{}", port));
-        let connection = connection.expect("ERROR: unable to establish connection with the server");
+    pub fn new(ip_address:String, port: String) -> Self{
+        let connection = TcpStream::connect(format!("{}:{}", ip_address, port));
+        let connection = connection.unwrap_or_else(|_stream|{
+            println!("ERROR: Unable to reach the server ..");
+            process::exit(1);
+        });
         Client{connection}
     }
 
-    pub fn listen_and_poll(&mut self, msg: String){
-        loop{
-            let buffer = msg.as_bytes();
-            self.connection.write_all(buffer).unwrap_or_else(|_buf| println!("Error: could not write to the server"));
-            thread::sleep(time::Duration::from_secs(5));
+    pub fn get_cred(&mut self, credential : String){
+        let proto = format!(
+            r#"GET CREDENTIAL:{}"#,
+            credential
+        );
+        let size = self.connection.write(proto.as_bytes()).unwrap_or_else(|_buf|{
+            0
+        });
+        if size == 0{
+            println!("ERROR: Unable to fetch credential from the server")
         }
     }
 
-    pub fn get_cred(&mut self, _credential : String){
-        todo!()
+    pub fn push_cred(&mut self, credential : String){
+        let proto = format!(
+            r#"PUSH CREDENTIAL:{}"#,
+            credential
+        );
+        let size = self.connection.write(proto.as_bytes()).unwrap_or_else(|_buf|{
+            0
+        });
+        if size == 0{
+            println!("ERROR: Unable to fetch credential from the server")
+        }
     }
 
     pub fn list_credential(&mut self){
-        todo!()
-    }
-
-    pub fn poll_server(&mut self){
-        todo!()
+        let proto = format!(
+            r#"List CREDENTIAL"#,
+        );
+        let size = self.connection.write(proto.as_bytes()).unwrap_or_else(|_buf|{
+            0
+        });
+        if size == 0{
+            println!("ERROR: Unable to fetch credential from the server")
+        }
     }
 
 }
