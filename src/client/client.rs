@@ -20,4 +20,17 @@ impl Client{
             thread::sleep(time::Duration::from_secs(5));
         }
     }
+
+    pub fn get_cred(&mut self, _credential : String){
+        todo!()
+    }
+
+    pub fn list_credential(&mut self){
+        todo!()
+    }
+
+    pub fn poll_server(&mut self){
+        todo!()
+    }
+
 }

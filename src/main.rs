@@ -73,19 +73,54 @@ fn client_command() -> clap::Command{
         .short_flag('u')
         .about("push value");
 
+    let get_credential =
+        clap::Arg::new("credential")
+        .short('c')
+        .help("credential to send to the server");
+
+    let push_credential =
+        clap::Arg::new("credential")
+        .short('c')
+        .help("credential to send to the server");
+
+    let list= 
+        clap::Command::new("list")
+        .short_flag('l')
+        .about("list all stored credentials");
+
     let define_port = 
         clap::Arg::new("port")
         .short('p')
         .help("Define port");
 
+    let target_ip = 
+        clap::Arg::new("target-ip")
+        .short('i')
+        .help("Define target ip");
+
     connect 
     .arg(
         define_port
     )
+    .arg(
+        target_ip
+        .required(true)
+    )
     .subcommand(
         get
+        .arg(
+            get_credential
+            .required(true)
+        )
     )
     .subcommand(
         push
+        .arg(
+            push_credential
+            .required(true)
+        )
+    )
+    .subcommand(
+       list 
     )
 }

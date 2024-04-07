@@ -1,4 +1,4 @@
-use std::{fmt::format, io::Read, net::{TcpListener, TcpStream}};
+use std::{io::Read, net::{TcpListener, TcpStream}};
 use std::thread;
 use std::str;
 pub struct Server{
