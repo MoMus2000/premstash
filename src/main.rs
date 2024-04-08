@@ -2,6 +2,7 @@ use clap::*;
 
 mod client;
 mod server;
+mod vault;
 fn main() {
 
     let default_port = &"8080".to_string();

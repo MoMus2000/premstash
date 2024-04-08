@@ -1,15 +1,21 @@
 use std::{io::Read, net::{TcpListener, TcpStream}};
 use std::thread;
 use std::str;
+
+use crate::server::parser::Parser;
+use crate::vault::vault::Vault;
+
 pub struct Server{
     listener: TcpListener,
+    vault: Vault
 }
 
 impl Server{
     pub fn new(port: String) -> Self{
+        let vault = Vault::new();
         let listener = TcpListener::bind(format!("127.0.0.1:{}", port));
         let listener = listener.expect("ERROR: Could not initialize server on the desired port");
-        Server {listener: listener}
+        Server {listener: listener, vault}
     }
 
     pub fn serve(&self){
@@ -46,6 +52,17 @@ fn handle_connection(mut conn_stream: TcpStream){
             }
         };
         let string_result = str::from_utf8(&buffer[0..len]).expect("Failed to convert to UTF-8");
-        println!("Message from server: {}", string_result);
+        let parsed_command = Parser::parse(string_result.to_string());
+
+        match parsed_command{
+            Ok(res) => {
+                println!("Message from server: {}", string_result);
+                println!("Running the associated fun");
+                (res.command.associate_func)(string_result.to_string());
+            }
+            Err(_) => {
+                break
+            }
+        }
     }
 }

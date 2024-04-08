@@ -1,28 +1,42 @@
 pub struct Command{
-    command: String,
-    associate_func: fn(String) -> Option<String>,
+    pub associate_func: fn(String) -> Option<String>,
 }
 
-fn get_credential(credential: String) -> Option<String>{
+pub fn get_credential(credential: String) -> Option<String>{
+    println!("Fetching credentials {}", credential);
     None
 }
 
-fn push_credential(credential: String) -> Option<String>{
+pub fn push_credential(credential: String) -> Option<String>{
+    println!("Pushing credentials {}", credential);
     None
 }
 
-fn list_credential() -> Option<String>{
+pub fn list_credential(_credential: String) -> Option<String>{
     None
 }
 
 impl Command{
-    fn route_command(&self, command_string: &str) -> Option<Command>{
-        match command_string{
-            "get_credential" => {
+    pub fn route_command(method: &str) -> Option<Command>{
+        match method{
+            "GET" => {
                 return Some(
                     Command{
-                        command: command_string.to_string(),
                         associate_func: get_credential,
+                    }
+                )
+            }
+            "PUSH" => {
+                return Some(
+                    Command{
+                        associate_func: push_credential,
+                    }
+                )
+            }
+            "LIST" => {
+                return Some(
+                    Command{
+                        associate_func: list_credential,
                     }
                 )
             }

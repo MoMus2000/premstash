@@ -43,7 +43,7 @@ impl Client{
 
     pub fn list_credential(&mut self){
         let proto = format!(
-            r#"List CREDENTIAL"#,
+            r#"LIST CREDENTIAL"#,
         );
         let size = self.connection.write(proto.as_bytes()).unwrap_or_else(|_buf|{
             0
