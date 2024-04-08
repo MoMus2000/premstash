@@ -39,7 +39,11 @@ impl Vault{
                         Ok(file) => file,
                         Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
                             println!("File already exists");
-                            file = File::open(FILE_PATH).expect("File should open");
+                            file = OpenOptions::new()
+                            .write(true)
+                            .append(true)
+                            .open(FILE_PATH)
+                            .unwrap();
                             file
                         },
                         Err(err) => {
@@ -59,7 +63,7 @@ impl Vault{
     }
 
     pub fn write_to_vault(&mut self, key: String, value: String) {
-        let credential = format!("KEY:{} VALUE:{}", key, value);
+        let credential = format!("KEY:{} VALUE:{}\n", key, value);
         match self.file.write(credential.as_bytes()) {
             Ok(size) => {
                 if size == 0 {
