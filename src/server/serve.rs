@@ -1,4 +1,4 @@
-use std::{borrow::BorrowMut, io::Read, net::{TcpListener, TcpStream}};
+use std::{borrow::BorrowMut, io::{Read, Write}, net::{TcpListener, TcpStream}};
 use std::thread;
 use std::str;
 
@@ -60,7 +60,21 @@ fn handle_connection(mut conn_stream: TcpStream, vault: &mut Vault){
             Ok(res) => {
                 println!("Message from server: {}", string_result);
                 println!("Running the associated fun");
-                (res.command.associate_func)(vault, string_result.to_string());
+                let output = (res.command.associate_func)(vault, string_result.to_string());
+                match output{
+                    Some(res) => {
+                        match conn_stream.write_all(res.as_bytes()){
+                            Ok(_) => {
+                                println!("Sending List to the client")
+                            }
+                            Err(err) => {
+                                println!("ERROR: {}", err)
+                            }
+                        }
+                        println!("Output: {}", res)
+                    }
+                    None => println!("ERROR: got nothing back")
+                }
             }
             Err(_) => {
                 break

@@ -1,9 +1,12 @@
+use std::io::Read;
 use std::{io::Write, net::TcpStream};
 use std::process;
+use std::str;
 pub struct Client{
     connection : TcpStream
 }
 
+const BUFFER_SIZE: usize = 1024;
 
 impl Client{
     pub fn new(ip_address:String, port: String) -> Self{
@@ -50,6 +53,19 @@ impl Client{
         });
         if size == 0{
             println!("ERROR: Unable to fetch credential from the server")
+        }
+        let mut buffer = [0; BUFFER_SIZE];
+        match self.connection.read(&mut buffer){
+            Ok(success) => {
+                let string_result = str::from_utf8(&buffer[0..success]).unwrap_or_else(|_|{
+                    "Nothing to show .."
+                });
+                println!("{}", string_result);
+                if success == 0{
+                    println!("HOUSTON, we have a problem");
+                }
+            }
+            Err(err) => println!("ERROR: {}", err)
         }
     }
 

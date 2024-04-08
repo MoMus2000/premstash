@@ -47,8 +47,7 @@ fn main() {
                     let argument = command.get_one::<String>("credential").unwrap();
                     client.push_cred(argument.to_string());
                 }
-                Some(("list", command)) =>{
-                    println!("List command: {:?}", command);
+                Some(("list", _command)) =>{
                     client.list_credential();
                 }
                 _ => {
