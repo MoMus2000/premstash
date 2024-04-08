@@ -5,9 +5,14 @@ pub struct Command{
 }
 
 pub fn get_credential(vault: &mut Vault, credential: String) -> Option<String>{
+    let credential : Vec<&str> = credential.split(":").into_iter().collect();
+    let credential = credential.get(1).unwrap();
     println!("Fetching credentials {}", credential);
-    vault.read_from_vault("something".to_string());
-    None
+    let fetched_credential = vault.read_from_vault(credential.to_string());
+    match fetched_credential{
+        Some(res) => return Some(res),
+        None => return None
+    }
 }
 
 pub fn push_credential(vault: &mut Vault, credential: String) -> Option<String>{

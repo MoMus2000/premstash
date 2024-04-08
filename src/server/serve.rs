@@ -1,4 +1,4 @@
-use std::{borrow::BorrowMut, io::{Read, Write}, net::{TcpListener, TcpStream}};
+use std::{borrow::BorrowMut, io::{Read, Write}, net::{TcpListener, TcpStream, Shutdown}};
 use std::thread;
 use std::str;
 
@@ -73,7 +73,11 @@ fn handle_connection(mut conn_stream: TcpStream, vault: &mut Vault){
                         }
                         println!("Output: {}", res)
                     }
-                    None => println!("ERROR: got nothing back")
+                    None => {
+                        conn_stream.write_all("ERROR: Did not find your credential ..".as_bytes()).unwrap();
+                        break
+                        println!("ERROR: got nothing back")
+                    }
                 }
             }
             Err(_) => {

@@ -1,3 +1,4 @@
+use std::env::consts::EXE_SUFFIX;
 use std::fs;
 use std::io::{Read, Write};
 use std::process;
@@ -71,25 +72,23 @@ impl Vault{
         }
     }
 
-    pub fn read_from_vault(&mut self, _credential: String){
+    pub fn read_from_vault(&mut self, credential: String) -> Option<String>{
         let mut buffer = String::new();
         match self.file.read_to_string(&mut buffer) {
             Ok(_content) => {
-                println!("File is still open.");
-                println!("Contents: {}", buffer);
-                // Do something with the file
+                let credential = Vault::search_by_key(buffer, credential);
+                self.file.seek(SeekFrom::Start(0)).unwrap_or_else(|_|{
+                    println!("Could not flush the file");
+                    0
+                });
+                return credential
             },
             Err(_) => {
                 println!("File is closed.");
                 // Handle the file being closed
             }
         } 
-
-        self.file.seek(SeekFrom::Start(0)).unwrap_or_else(|_|{
-            println!("Could not flush the file");
-            0
-        });
-
+        None
     }
 
     pub fn list_keys_from_vault(&mut self) -> Option<Vec<String>>{
@@ -106,7 +105,6 @@ impl Vault{
             },
             Err(_) => {
                 println!("File is closed.");
-                // Handle the file being closed
             }
         } 
         None
@@ -122,6 +120,24 @@ impl Vault{
             }
         }
         key_store
+    }
+
+    pub fn search_by_key(file_string: String, credential_key: String) -> Option<String>{
+        for line in file_string.lines(){
+            let key : Vec<String> = line.split(" ").map(|s| s.to_string()).collect();
+            match key.get(1){
+                Some(exists) => {
+                    println!("Candidate {}", exists);
+                    println!("CRED_KEY {}", credential_key);
+                    if exists.to_string() == credential_key{
+                        println!("CREDENTIAL FOUND: {}", credential_key);
+                        return Some(credential_key)
+                    }
+                }
+                None => println!("ERROR: Nothing to list")
+            }
+        }
+        None
     }
 
 }
