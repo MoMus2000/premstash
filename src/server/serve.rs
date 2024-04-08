@@ -1,4 +1,4 @@
-use std::{io::Read, net::{TcpListener, TcpStream}};
+use std::{borrow::BorrowMut, io::Read, net::{TcpListener, TcpStream}};
 use std::thread;
 use std::str;
 
@@ -23,8 +23,9 @@ impl Server{
             match stream{
                 Ok(tcp_stream_acquired) => {
                     println!("Connection established with {:?}", tcp_stream_acquired.local_addr());
+                    let mut vault = self.vault.clone();
                     thread::spawn(move ||{
-                        handle_connection(tcp_stream_acquired);
+                        handle_connection(tcp_stream_acquired, vault.borrow_mut());
                     });
                 }
 
@@ -37,9 +38,10 @@ impl Server{
     }
 }
 
-fn handle_connection(mut conn_stream: TcpStream){
+fn handle_connection(mut conn_stream: TcpStream, vault: &mut Vault){
     let mut buffer = [0; 512];
     loop {
+        let vault = vault.borrow_mut();
         let len = match conn_stream.read(&mut buffer) {
             Ok(len) if len == 0 => {
                 println!("Connection closed by peer");
@@ -58,7 +60,7 @@ fn handle_connection(mut conn_stream: TcpStream){
             Ok(res) => {
                 println!("Message from server: {}", string_result);
                 println!("Running the associated fun");
-                (res.command.associate_func)(string_result.to_string());
+                (res.command.associate_func)(vault, string_result.to_string());
             }
             Err(_) => {
                 break

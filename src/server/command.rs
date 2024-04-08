@@ -1,18 +1,21 @@
+use crate::vault::vault::Vault;
+
 pub struct Command{
-    pub associate_func: fn(String) -> Option<String>,
+    pub associate_func: fn(&mut Vault, String) -> Option<String>,
 }
 
-pub fn get_credential(credential: String) -> Option<String>{
+pub fn get_credential(vault: &mut Vault, credential: String) -> Option<String>{
     println!("Fetching credentials {}", credential);
     None
 }
 
-pub fn push_credential(credential: String) -> Option<String>{
+pub fn push_credential(vault: &mut Vault, credential: String) -> Option<String>{
     println!("Pushing credentials {}", credential);
+    vault.write_to_vault("something".to_string(), "ok".to_string());
     None
 }
 
-pub fn list_credential(_credential: String) -> Option<String>{
+pub fn list_credential(vault: &mut Vault, _credential: String) -> Option<String>{
     None
 }
 
