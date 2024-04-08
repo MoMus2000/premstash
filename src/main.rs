@@ -44,8 +44,10 @@ fn main() {
                     client.get_cred(argument.to_string());
                 }
                 Some(("push", command)) =>{
-                    let argument = command.get_one::<String>("credential").unwrap();
-                    client.push_cred(argument.to_string());
+                    let argument_key = command.get_one::<String>("credential_key").unwrap();
+                    let argument_value = command.get_one::<String>("credential_value").unwrap();
+                    let credential = format!("{argument_key}:{argument_value}");
+                    client.push_cred(credential);
                 }
                 Some(("list", _command)) =>{
                     client.list_credential();
@@ -100,9 +102,16 @@ fn client_command() -> clap::Command{
         .index(1)
         .help("credential to send to the server");
 
-    let push_credential =
-        clap::Arg::new("credential")
+    let push_credential_key =
+        clap::Arg::new("credential_key")
         .index(1)
+        .required(true)
+        .help("credential to send to the server");
+    
+    let push_credential_value =
+        clap::Arg::new("credential_value")
+        .index(2)
+        .required(true)
         .help("credential to send to the server");
 
     let list= 
@@ -138,7 +147,11 @@ fn client_command() -> clap::Command{
     .subcommand(
         push
         .arg(
-            push_credential
+            push_credential_key
+            .required(true)
+        )
+        .arg(
+            push_credential_value
             .required(true)
         )
     )

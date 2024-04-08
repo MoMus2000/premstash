@@ -16,8 +16,12 @@ pub fn get_credential(vault: &mut Vault, credential: String) -> Option<String>{
 }
 
 pub fn push_credential(vault: &mut Vault, credential: String) -> Option<String>{
+    let credential : Vec<&str> = credential.split(":").into_iter().collect();
+    let key = credential.get(1).unwrap();
+    let value = credential.get(2).unwrap();
+    let credential = format!("{}:{}\n", key, value);
     println!("Pushing credentials {}", credential);
-    vault.write_to_vault("something".to_string(), "ok".to_string());
+    vault.write_to_vault(credential.to_string());
     None
 }
 

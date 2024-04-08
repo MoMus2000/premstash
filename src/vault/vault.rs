@@ -62,8 +62,7 @@ impl Vault{
         }
     }
 
-    pub fn write_to_vault(&mut self, key: String, value: String) {
-        let credential = format!("KEY:{} VALUE:{}\n", key, value);
+    pub fn write_to_vault(&mut self, credential: String) {
         match self.file.write(credential.as_bytes()) {
             Ok(size) => {
                 if size == 0 {
