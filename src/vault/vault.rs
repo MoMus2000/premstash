@@ -1,4 +1,3 @@
-use std::env::consts::EXE_SUFFIX;
 use std::fs;
 use std::io::{Read, Write};
 use std::process;
@@ -42,6 +41,7 @@ impl Vault{
                             file = OpenOptions::new()
                             .write(true)
                             .append(true)
+                            .read(true)
                             .open(FILE_PATH)
                             .unwrap();
                             file
@@ -106,8 +106,8 @@ impl Vault{
                 });
                 return Some(filtered_keys)
             },
-            Err(_) => {
-                println!("File is closed.");
+            Err(err) => {
+                println!("File is closed. {}", err);
             }
         } 
         None
@@ -115,8 +115,10 @@ impl Vault{
 
     pub fn filter_keys(file_string: String) -> Vec<String>{
         let mut key_store = Vec::<String>::new();
+        println!("file_string {:?}", file_string);
         for line in file_string.lines(){
             let key : Vec<String> = line.split(" ").map(|s| s.to_string()).collect();
+            println!("filter keys {:?}", key);
             match key.get(1){
                 Some(exists) => key_store.push(exists.to_string()),
                 None => println!("ERROR: Nothing to list")
@@ -134,7 +136,8 @@ impl Vault{
                     println!("CRED_KEY {}", credential_key);
                     if exists.to_string() == credential_key{
                         println!("CREDENTIAL FOUND: {}", credential_key);
-                        return Some(credential_key)
+                        let value = key.get(3).unwrap();
+                        return Some(value.to_string())
                     }
                 }
                 None => println!("ERROR: Nothing to list")
