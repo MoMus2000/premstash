@@ -1,3 +1,5 @@
+use std::os::unix::process::parent_id;
+
 use rusqlite::{params, Connection, Result, OpenFlags};
 
 pub struct sqlite_db{
@@ -38,6 +40,22 @@ impl sqlite_db{
         ).unwrap();
     }
 
+    fn insert_cred(&self, values: &[String]){
+        assert!(values.len() == 2);
+        self.conn.execute("
+        INSERT INTO PREMSTASH (credential, store) 
+        VALUES (?1, ?2)", params![values[0], values[1]]).unwrap();
+    }
+
+    fn fetch_cred(&self, values: &[String]){
+        assert!(values.len() == 1);
+        let mut fetch_statement = self.conn.prepare("
+        SELECT store FROM PREMSTASH
+        WHERE credential == ?1 
+        ").unwrap();
+        fetch_statement.execute(params![values[0]]).unwrap();
+    }
+    
 }
 
 #[cfg(test)]
