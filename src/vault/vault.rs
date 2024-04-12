@@ -147,3 +147,19 @@ impl Vault{
     }
 
 }
+
+#[cfg(test)]
+mod tests{
+    use short_crypt::ShortCrypt;
+    use crate::vault::encrypt;
+
+    #[test]
+    fn test_encrypt_decrypt(){
+        let mut enc = encrypt::Enc::new("magickey");
+        let enc_string = enc.encrypt("Something Something 69".to_string());
+        let dec = enc.decrypt(enc_string.clone());
+        println!("Encrypted String : {:?}", enc_string);
+        println!("Decrypted String : {}", dec);
+    }
+
+}
