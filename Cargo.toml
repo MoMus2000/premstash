@@ -8,4 +8,5 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.5.4", features = ["cargo"] }
 nix = { version = "0.28.0", features = ["fs"] }
+rusqlite = "0.31.0"
 short-crypt = "1.0.28"

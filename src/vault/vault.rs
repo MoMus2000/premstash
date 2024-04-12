@@ -150,7 +150,6 @@ impl Vault{
 
 #[cfg(test)]
 mod tests{
-    use short_crypt::ShortCrypt;
     use crate::vault::encrypt;
 
     #[test]
