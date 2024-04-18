@@ -1,23 +1,13 @@
-use std::fs;
-use std::io::{Read, Write};
-use std::process;
-use std::io::{Seek, SeekFrom};
-use std::fs::{File, OpenOptions};
-use std::io;
-
-use crate::vault::sqlite::db::sqlite_db;
+use crate::vault::sqlite::db::SqliteDb;
 
 #[derive(Debug)]
 pub struct Vault{
-    pub db: sqlite_db
+    pub db: SqliteDb
 }
-
-const CREDENTIAL_DIR : &str = "./premstash";
-const FILE_PATH: &str = "./premstash/cred.vault";
 
 impl Vault{
     pub fn new() -> Vault{
-        let db = sqlite_db::new();
+        let db = SqliteDb::new();
         Vault{
             db
         }
@@ -39,8 +29,8 @@ impl Vault{
 
 #[cfg(test)]
 mod tests{
-    use crate::vault::encrypt;
-
+    // use crate::vault::encrypt;
+    /*
     #[test]
     fn test_encrypt_decrypt(){
         let mut enc = encrypt::Enc::new("magickey");
@@ -49,5 +39,5 @@ mod tests{
         println!("Encrypted String : {:?}", enc_string);
         println!("Decrypted String : {}", dec);
     }
-
+    */
 }

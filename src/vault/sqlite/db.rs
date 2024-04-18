@@ -1,20 +1,18 @@
-use std::os::unix::process::parent_id;
-
-use rusqlite::{params, Connection, Result, OpenFlags};
+use rusqlite::{params, Connection, OpenFlags};
 
 #[derive(Debug)]
-pub struct sqlite_db{
+pub struct SqliteDb{
     pub conn: Connection
 }
 
-impl sqlite_db{
+impl SqliteDb{
     pub fn new() -> Self{
         let conn = Connection::open_with_flags("/Users/mmuhammad/Desktop/projects/premstash/premstash/cred.vault",
             OpenFlags::SQLITE_OPEN_READ_WRITE | OpenFlags::SQLITE_OPEN_CREATE
               )
               .unwrap();
-        sqlite_db::build_schema(&conn);
-        sqlite_db{conn}
+        SqliteDb::build_schema(&conn);
+        SqliteDb{conn}
     }
 
     pub fn build_schema(conn: &Connection){
@@ -79,10 +77,10 @@ impl sqlite_db{
 
 #[cfg(test)]
 mod tests{
-    use super::sqlite_db;
+    use super::SqliteDb;
 
     #[test]
     pub fn test_db_creation(){
-        sqlite_db::new();
+        SqliteDb::new();
     }
 }
