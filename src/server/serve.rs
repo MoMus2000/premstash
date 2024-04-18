@@ -1,13 +1,12 @@
 use std::{borrow::BorrowMut, io::{Read, Write}, net::{TcpListener, TcpStream}};
 use std::thread;
 use std::str;
-
+use std::sync::{Arc, Mutex};
 use crate::server::parser::Parser;
 use crate::vault::vault::Vault;
 
 pub struct Server{
     listener: TcpListener,
-    vault: Vault
 }
 
 impl Server{
@@ -15,7 +14,7 @@ impl Server{
         let vault = Vault::new();
         let listener = TcpListener::bind(format!("127.0.0.1:{}", port));
         let listener = listener.expect("ERROR: Could not initialize server on the desired port");
-        Server {listener: listener, vault}
+        Server {listener: listener}
     }
 
     pub fn serve(&self){
@@ -23,9 +22,8 @@ impl Server{
             match stream{
                 Ok(tcp_stream_acquired) => {
                     println!("Connection established with {:?}", tcp_stream_acquired.local_addr());
-                    let mut vault = self.vault.clone();
                     thread::spawn(move ||{
-                        handle_connection(tcp_stream_acquired, vault.borrow_mut());
+                        handle_connection(tcp_stream_acquired);
                     });
                 }
 
@@ -38,10 +36,9 @@ impl Server{
     }
 }
 
-fn handle_connection(mut conn_stream: TcpStream, vault: &mut Vault){
+fn handle_connection(mut conn_stream: TcpStream){
     let mut buffer = [0; 512];
     loop {
-        let vault = vault.borrow_mut();
         let len = match conn_stream.read(&mut buffer) {
             Ok(len) if len == 0 => {
                 println!("Connection closed by peer");
@@ -60,7 +57,8 @@ fn handle_connection(mut conn_stream: TcpStream, vault: &mut Vault){
             Ok(res) => {
                 println!("Message from server: {}", string_result);
                 println!("Running the associated fun");
-                let output = (res.command.associate_func)(vault, string_result.to_string());
+                let output = (res.command.associate_func)(string_result.to_string());
+                println!("PRE OUTPUT: {:?}", output);
                 match output{
                     Some(res) => {
                         match conn_stream.write_all(res.as_bytes()){
