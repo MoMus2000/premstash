@@ -32,20 +32,22 @@ pub fn list_credential(_credential: String) -> Option<String>{
     println!("Listing credentials");
     let mut vault = Vault::new();
     let keys = vault.list_keys_from_vault();
+    println!("GOT THESE KEYS: {:?}", keys);
     let mut res_string = Vec::<String>::new();
     match keys{
         Some(res) => {
             for key in res{
-                let current_key = format!("KEY: {}", key);
+                let current_key = format!("{}", key);
                 res_string.push(current_key);
                 println!("KEY {}", key);
             }
             let result = res_string.join("\n");
             return Some(result)
         }
-        None => println!("No keys found")
+        None => {
+            return Some("No keys found".to_string());
+        }
     }
-    None
 }
 
 impl Command{

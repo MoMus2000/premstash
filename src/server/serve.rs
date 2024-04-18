@@ -58,6 +58,7 @@ fn handle_connection(mut conn_stream: TcpStream){
                 println!("PRE OUTPUT: {:?}", output);
                 match output{
                     Some(res) => {
+                        println!("HERE");
                         match conn_stream.write_all(res.as_bytes()){
                             Ok(_) => {
                                 println!("Sending List to the client")

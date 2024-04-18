@@ -19,7 +19,7 @@ impl SqliteDb{
         conn.execute(
             "CREATE TABLE IF NOT EXISTS PREMSTASH (
                   id INTEGER PRIMARY KEY,
-                  credential TEXT NOT NULL,
+                  credential TEXT UNIQUE NOT NULL,
                   store TEXT NOT NULL)",
             [],
         ).unwrap();
@@ -75,6 +75,7 @@ impl SqliteDb{
 
     pub fn list_creds(&self) -> Vec<String>{
         let mut res_arr = Vec::<String>::new();
+        res_arr.push("--Values--".to_string());
         let mut fetch_statement = self.conn.prepare("
         SELECT credential FROM PREMSTASH
         ").unwrap();
@@ -95,6 +96,7 @@ impl SqliteDb{
                 }
             }
         }
+        res_arr.push("--End--".to_string());
         res_arr
     }
     
