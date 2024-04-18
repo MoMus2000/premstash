@@ -22,7 +22,7 @@ impl Vault{
     }
 
     pub fn list_keys_from_vault(&mut self) -> Option<Vec<String>>{
-        None
+        Some(self.db.list_creds())
     }
 
 }

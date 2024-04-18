@@ -72,6 +72,31 @@ impl SqliteDb{
         }
         String::from("Could not find your credential")
     }
+
+    pub fn list_creds(&self) -> Vec<String>{
+        let mut res_arr = Vec::<String>::new();
+        let mut fetch_statement = self.conn.prepare("
+        SELECT credential FROM PREMSTASH
+        ").unwrap();
+        let fetch_iter = fetch_statement.query_map(params![], |row|{
+            Ok((
+                row.get::<usize, String>(0)?,
+            ))
+        }).unwrap();
+        for cred in fetch_iter{
+            match cred{
+                Ok(res) => {
+                    let credential = res;
+                    println!("Credential: {:?}", credential.0);
+                    res_arr.push(credential.0);
+                }
+                _ => {
+                    return Vec::<String>::new();
+                }
+            }
+        }
+        res_arr
+    }
     
 }
 

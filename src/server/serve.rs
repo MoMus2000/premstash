@@ -1,9 +1,7 @@
-use std::{borrow::BorrowMut, io::{Read, Write}, net::{TcpListener, TcpStream}};
+use std::{io::{Read, Write}, net::{TcpListener, TcpStream}};
 use std::thread;
 use std::str;
-use std::sync::{Arc, Mutex};
 use crate::server::parser::Parser;
-use crate::vault::vault::Vault;
 
 pub struct Server{
     listener: TcpListener,
@@ -11,7 +9,6 @@ pub struct Server{
 
 impl Server{
     pub fn new(port: String) -> Self{
-        let vault = Vault::new();
         let listener = TcpListener::bind(format!("127.0.0.1:{}", port));
         let listener = listener.expect("ERROR: Could not initialize server on the desired port");
         Server {listener: listener}
