@@ -17,11 +17,33 @@ impl Server{
     pub fn serve(&self){
         for stream in self.listener.incoming(){
             match stream{
-                Ok(tcp_stream_acquired) => {
+                Ok(mut tcp_stream_acquired) => {
                     println!("Connection established with {:?}", tcp_stream_acquired.local_addr());
-                    thread::spawn(move ||{
-                        handle_connection(tcp_stream_acquired);
-                    });
+                    let mut buffer = [0; 512];
+                    let len = match tcp_stream_acquired.read(&mut buffer) {
+                        Ok(len) if len == 0 => {
+                            println!("Connection closed by peer");
+                            break; // Break out of the loop if the stream has ended
+                        }
+                        Ok(len) => len,
+                        Err(err) => {
+                            eprintln!("Error reading from stream: {}", err);
+                            break; // Break out of the loop on error
+                        }
+                    };
+                    let string_result = str::from_utf8(&buffer[0..len]).expect("Failed to convert to UTF-8");
+                    match string_result{
+                        "SHARE_RECORDS" => {
+                            thread::spawn(move || {
+                                println!("Gossip request from fellow server");
+                            });
+                        },
+                        _ => {
+                            thread::spawn(move ||{
+                                handle_connection(tcp_stream_acquired);
+                            });
+                        }
+                    }
                 }
 
                 Err(_) => {

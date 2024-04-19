@@ -1,0 +1,19 @@
+# Define papa, for discovery
+main_server:
+  - 127.0.0.1
+
+# List of peers
+list_of_servers:
+  - localhost
+  - 192.168.0.1
+  - mapleresidential.com:1234
+
+# In seconds
+ping_interval:
+  5
+
+
+### The way I think the architecture works is that everyone, connects to papa
+# for getting the true info, with it acting as the ground zero or the source of the truth
+# List of servers can be defined for conventions sake or can be updated as time goes on
+# there can also be multiple main servers
