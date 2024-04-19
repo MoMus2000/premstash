@@ -36,7 +36,8 @@ impl GossipServer{
                 Ok(mut resultant_conn) => {
                     let bytes_read = resultant_conn.read(&mut buffer).unwrap();
                     let conv_to_string = from_utf8(&buffer[0..bytes_read]).unwrap();
-                    match conv_to_string{
+                    println!("CONV_TO_STRING: {}", conv_to_string);
+                    match conv_to_string.trim(){
                         "DISCOVER" => {
                             thread::spawn(move||{
                                 chatter(resultant_conn);
@@ -57,10 +58,9 @@ impl GossipServer{
 
 pub fn chatter(mut listener: TcpStream){
     let mut buffer = [0 as u8; 512];
+    listener.write("I see you, lets chat\n".as_bytes()).unwrap();
     loop{
-        listener.write("I see you, lets chat".as_bytes()).unwrap();
         let n_bytes = listener.read(&mut buffer).unwrap();
         println!("{}", from_utf8(&buffer[0..n_bytes]).unwrap())
     }
 }
-
