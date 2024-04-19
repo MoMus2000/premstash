@@ -4,8 +4,6 @@ use std::thread;
 use std::{io::Read, net::TcpListener};
 use std::str::from_utf8;
 
-use nix::libc::listen;
-
 pub struct GossipServer{
     pub listener : TcpListener,
     pub port: String
