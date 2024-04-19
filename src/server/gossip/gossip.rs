@@ -4,9 +4,13 @@ use std::thread;
 use std::{io::Read, net::TcpListener};
 use std::str::from_utf8;
 
+use crate::server::gossip::config;
+
 pub struct GossipServer{
     pub listener : TcpListener,
-    pub port: String
+    pub port: String,
+    pub interval: usize,
+    pub config: config::Config
 }
 
 pub fn new(server_port: usize) -> GossipServer{
@@ -14,9 +18,12 @@ pub fn new(server_port: usize) -> GossipServer{
     let listener = TcpListener::bind(format!("127.0.0.1:{}", gossip_port));
     match listener{
         Ok(listener_ok) => {
+            let config = config::read_config();
             return GossipServer{
                 listener: listener_ok,
-                port: format!(":{}",gossip_port)
+                port: format!(":{}",gossip_port),
+                interval: server_port,
+                config
             }
         }
         Err(err) => {

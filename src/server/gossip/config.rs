@@ -16,7 +16,7 @@ pub fn read_config() -> Config{
     
     let mut main_servers = Vec::<String>::new();
     for server in config["main_servers"].clone().into_iter(){
-        main_server.push(server.as_str().unwrap().to_string());
+        main_servers.push(server.as_str().unwrap().to_string());
     }
 
     let ping_interval = config["ping_interval"].as_str().unwrap().to_string();
@@ -26,14 +26,4 @@ pub fn read_config() -> Config{
         ping_interval
     }
 
-}
-
-#[cfg(test)]
-mod tests{
-    use crate::server::gossip::gossip;
-
-    #[test]
-    pub fn test_read_config(){
-        gossip::read_config();
-    }
 }
