@@ -57,6 +57,32 @@ impl Client{
         }
     }
 
+    pub fn delete_cred(&mut self, credential : String){
+        let proto = format!(
+            r#"DELETE CREDENTIAL:{}"#,
+            credential
+        );
+        let size = self.connection.write(proto.as_bytes()).unwrap_or_else(|_buf|{
+            0
+        });
+        if size == 0{
+            println!("ERROR: Unable to fetch credential from the server")
+        }
+    }
+
+    pub fn update_cred(&mut self, credential : String){
+        let proto = format!(
+            r#"UPDATE CREDENTIAL:{}"#,
+            credential
+        );
+        let size = self.connection.write(proto.as_bytes()).unwrap_or_else(|_buf|{
+            0
+        });
+        if size == 0{
+            println!("ERROR: Unable to fetch credential from the server")
+        }
+    }
+
     pub fn list_credential(&mut self){
         let proto = format!(
             r#"LIST CREDENTIAL"#,

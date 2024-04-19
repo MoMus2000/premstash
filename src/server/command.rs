@@ -4,6 +4,30 @@ pub struct Command{
     pub associate_func: fn(String) -> Option<String>,
 }
 
+pub fn delete_credential(credential: String) -> Option<String>{
+    let mut vault = Vault::new();
+    let credential : Vec<&str> = credential.split(":").into_iter().collect();
+    let credential = credential.get(1).unwrap();
+    println!("DELETING credentials {}", credential);
+    let fetched_credential = vault.delete_keys_from_vault(credential.to_string());
+    println!("Deleted : {:?}", fetched_credential);
+    match fetched_credential{
+        Some(res) => return Some(res.to_string()),
+        _  => return Some("Could not find your credential ..".to_string())
+    }
+}
+
+pub fn update_credential(credential: String) -> Option<String>{
+    let mut vault = Vault::new();
+    let credential : Vec<&str> = credential.split(":").into_iter().collect();
+    let key = credential.get(1).unwrap();
+    let value = credential.get(2).unwrap();
+    let credential = vec![key, value];
+    println!("UPADTE credentials {:?}", credential);
+    vault.update_keys_from_vault(credential);
+    None
+}
+
 pub fn get_credential(credential: String) -> Option<String>{
     let mut vault = Vault::new();
     let credential : Vec<&str> = credential.split(":").into_iter().collect();
@@ -54,28 +78,42 @@ impl Command{
     pub fn route_command(method: &str) -> Option<Command>{
         match method{
             "GET" => {
-                return Some(
+                Some(
                     Command{
                         associate_func: get_credential,
                     }
                 )
             }
             "PUSH" => {
-                return Some(
+                Some(
                     Command{
                         associate_func: push_credential,
                     }
                 )
             }
             "LIST" => {
-                return Some(
+                Some(
                     Command{
                         associate_func: list_credential,
                     }
                 )
             }
+            "DELETE" => {
+                Some(
+                    Command{
+                        associate_func: delete_credential,
+                    }
+                )
+            }
+            "UPDATE" => {
+                Some(
+                    Command{
+                        associate_func: update_credential,
+                    }
+                )
+            }
             _ => {
-                return None
+                None
             }
         }
     }

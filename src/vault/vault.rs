@@ -25,6 +25,14 @@ impl Vault{
         Some(self.db.list_creds())
     }
 
+    pub fn delete_keys_from_vault(&mut self, credential: String) -> Option<usize>{
+        Some(self.db.delete_cred(&[credential]))
+    }
+
+    pub fn update_keys_from_vault(&mut self,credential: Vec<&&str>) -> Option<usize>{
+        Some(self.db.up_cred(credential))
+    }
+
 }
 
 #[cfg(test)]

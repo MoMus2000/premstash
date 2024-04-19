@@ -20,7 +20,9 @@ impl SqliteDb{
             "CREATE TABLE IF NOT EXISTS PREMSTASH (
                   id INTEGER PRIMARY KEY,
                   credential TEXT UNIQUE NOT NULL,
-                  store TEXT NOT NULL)",
+                  store TEXT NOT NULL,
+                  user TEXT UNIQUE 
+                )",
             [],
         ).unwrap();
         conn.execute(
@@ -40,11 +42,27 @@ impl SqliteDb{
     }
 
     pub fn insert_cred(&self, values: Vec<&&str>){
-        println!("VALUES: {:?}", values);
         assert!(values.len() == 2);
         self.conn.execute("
         INSERT INTO PREMSTASH (credential, store) 
         VALUES (?1, ?2)", params![values[0], values[1]]).unwrap();
+    }
+
+    pub fn up_cred(&self, values: Vec<&&str>) -> usize{
+        assert!(values.len() == 2);
+        let count = self.conn.execute("
+        UPDATE PREMSTASH SET store = ?2
+        WHERE credential = ?1", 
+        params![values[0], values[1]]).unwrap();
+        count
+    }
+
+    pub fn delete_cred(&self, values: &[String]) -> usize{
+        assert!(values.len() == 1);
+        let count = self.conn.execute("
+        DELETE FROM PREMSTASH WHERE credential = ?1", 
+        params![values[0]]).unwrap();
+        count
     }
 
     pub fn fetch_cred(&self, values: &[String]) -> String{
