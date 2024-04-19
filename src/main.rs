@@ -1,3 +1,5 @@
+use std::thread;
+
 use clap::*;
 
 mod client;
@@ -23,6 +25,10 @@ fn main() {
             let port = sub_matches.get_one::<String>("port");
             let port = port.unwrap_or_else(|| {
                 default_port
+            });
+            thread::spawn(move||{
+                let gossip_server = server::gossip::gossip::new(8081);
+                gossip_server.start();
             });
             let server = server::serve::Server::new(port.clone());
             server.serve();

@@ -1,12 +1,6 @@
 # Define papa, for discovery
-main_server:
+main_servers:
   - 127.0.0.1
-
-# List of peers
-list_of_servers:
-  - localhost
-  - 192.168.0.1
-  - mapleresidential.com:1234
 
 # In seconds
 ping_interval:
